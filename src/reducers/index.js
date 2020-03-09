@@ -1,9 +1,9 @@
 import {
-    ORDER_DATA_LOADED
+    ORDER_DATA_LOADED, ORDER_STATUS_UPDATED
 } from "../constants/action-types";
 
 const initialState = {
-    orders: [],
+    orders: {},
 };
 
 
@@ -13,6 +13,23 @@ function rootReducer(state = initialState, action) {
             ...state,
             orders: state.orders = action.payload
         }
+    }
+    if (action.type === ORDER_STATUS_UPDATED) {
+
+        const orderId = action.payload.orderId;
+        console.log(orderId);
+        console.log(state.orders);
+
+        let order = state.orders[orderId];
+        order.state = action.payload.state;
+//FIXME correct updating state
+        return {
+            ...state,
+            orders: {
+                ...state.orders,
+                [orderId]: order
+            }
+        };
     }
     return state;
 }

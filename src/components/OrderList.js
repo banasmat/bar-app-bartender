@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import { connect } from "react-redux";
 import { makeStyles } from '@material-ui/core/styles';
-import { getOrderData } from "../actions/index";
+import { getOrderData, updateOrderStatus } from "../actions/index";
 import Box from "@material-ui/core/Box";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -20,7 +20,18 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import NotificationsIcon from '@material-ui/icons/Notifications'
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+
 import {PLACE_ID} from "../constants/config";
+import {
+    ORDER_STATUS_ACCEPTED,
+    ORDER_STATUS_FINISHED,
+    ORDER_STATUS_IN_PROGRESS,
+    ORDER_STATUS_READY
+} from "../constants/order-status";
+import Fab from "@material-ui/core/Fab";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -46,7 +57,7 @@ const mapStateToProps = state => {
     return { orders: state.orders };
 };
 
-const OrderList = ({ orders, getOrderData }) => {
+const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
 
     const classes = useStyles();
 
@@ -58,11 +69,39 @@ const OrderList = ({ orders, getOrderData }) => {
 
     }, []);
 
+    const handleUpdateStatusClick = (e) => {
+        const _data = e.currentTarget.dataset;
+        updateOrderStatus(_data.orderid, _data.nextstatus);
+    };
+
     return (
         <Box className={classes.root}>
             <List>
-                {orders.map((order) => {
-
+                {Object.values(orders).map((order) => {
+                    let statusButton;
+                    switch(order.status){
+                        case ORDER_STATUS_ACCEPTED:
+                            statusButton = (
+                                <Fab variant="extended" data-orderid={order.id} data-nextstatus={ORDER_STATUS_IN_PROGRESS} onClick={handleUpdateStatusClick}>
+                                    <PlayArrowIcon/>W przygotowaniu
+                                </Fab>
+                            );
+                            break;
+                        case ORDER_STATUS_IN_PROGRESS:
+                            statusButton = (
+                                <Fab variant="extended" data-orderid={order.id} data-nextstatus={ORDER_STATUS_READY} onClick={handleUpdateStatusClick}>
+                                    <NotificationsIcon/>Do odbioru
+                                </Fab>
+                            );
+                            break;
+                        case ORDER_STATUS_READY:
+                            statusButton = (
+                                <Fab variant="extended" data-orderid={order.id} data-nextstatus={ORDER_STATUS_FINISHED} onClick={handleUpdateStatusClick}>
+                                    <CheckCircleOutlineIcon/>Odebrane
+                                </Fab>
+                            );
+                            break;
+                    }
                     return (<ListItem key={order.id} alignItems="flex-start">
                             <ExpansionPanel>
                                 <ExpansionPanelSummary
@@ -98,7 +137,7 @@ const OrderList = ({ orders, getOrderData }) => {
                                             </React.Fragment>
                                         }
                                     />
-                                {/* TODO status buttons */}
+                                {statusButton}
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
                                     <TableContainer component={Paper}>
@@ -124,4 +163,4 @@ const OrderList = ({ orders, getOrderData }) => {
     );
 };
 
-export default connect(mapStateToProps, { getOrderData })(OrderList);
+export default connect(mapStateToProps, { getOrderData, updateOrderStatus })(OrderList);

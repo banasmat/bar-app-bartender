@@ -17,7 +17,8 @@ export function getOrderData(searchValue) {
     };
 }
 
-export function updateOrder(orderId, status) {
+export function updateOrderStatus(orderId, status) {
+
     return function(dispatch) {
         return fetch(ORDER_STATUS.replace('{orderId}', orderId), {
             method: "POST",
