@@ -99,8 +99,8 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
     let updateOrdersTimeout;
 
     function updateOrders(reset=false){
+        clearTimeout(updateOrdersTimeout);
         if(reset){
-            clearTimeout(updateOrdersTimeout);
             getOrderData(PLACE_ID);
         }
         updateOrdersTimeout = setTimeout(()=>{
