@@ -1,6 +1,7 @@
 import {
     ORDER_DATA_LOADED, ORDER_STATUS_UPDATED
 } from "../constants/action-types";
+import update from 'immutability-helper';
 
 const initialState = {
     orders: {},
@@ -18,17 +19,17 @@ function rootReducer(state = initialState, action) {
 
         const orderId = action.payload.orderId;
 
-        let order = state.orders[orderId];
-        order.status = action.payload.status;
+        //TODO if new status 5, remove from the list
 
-
-        return {
-            ...state,
-            orders: {
-                ...state.orders,
-                [orderId]: order
-            }
-        };
+        return update(state, {
+            orders: orders =>
+                update(orders || {}, {
+                    [orderId]: order =>
+                        update(order, {
+                            status: {$set: action.payload.status}
+                        })
+                })
+        });
     }
     return state;
 }

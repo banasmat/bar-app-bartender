@@ -35,7 +35,7 @@ export function updateOrderStatus(orderId, status) {
                 if(json.ack === "SUCCESS"){
                     dispatch({ type: ORDER_STATUS_UPDATED, payload: {
                         orderId: orderId,
-                        status: status
+                        status: parseInt(status)
                     } });
                 } else {
                     dispatch({ type: API_ERROR, payload: json });

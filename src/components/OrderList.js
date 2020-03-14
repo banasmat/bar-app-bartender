@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: 'green'
     },
     status_5: {
-        backgroundColor: 'green'
+        backgroundColor: '#DAA520'
     }
 }));
 
@@ -102,8 +102,9 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
         <Box className={classes.root}>
             <List className={classes.list}>
                 {Object.values(orders).map((order) => {
-                    let statusButton;
-                    let avatarIcon = <CircularProgress />;
+                    let statusButton = <CircularProgress />;
+                    let avatar = <CircularProgress />;
+
                     switch(order.status){
                         case ORDER_STATUS_ACCEPTED:
                             statusButton = (
@@ -111,7 +112,7 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                     <PlayArrowIcon/>W przygotowaniu
                                 </Button>
                             );
-                            avatarIcon = <PriorityHighIcon/>;
+                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]]}><PriorityHighIcon/></Avatar>;
                             break;
                         case ORDER_STATUS_IN_PROGRESS:
                             statusButton = (
@@ -119,7 +120,7 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                     <NotificationsIcon/>Do odbioru
                                 </Button>
                             );
-                            avatarIcon = <PlayArrowIcon/>;
+                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]]}><PlayArrowIcon/></Avatar>;
                             break;
                         case ORDER_STATUS_READY:
                             statusButton = (
@@ -127,7 +128,7 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                     <CheckCircleOutlineIcon/>Odebrane
                                 </Button>
                             );
-                            avatarIcon = <NotificationsIcon/>;
+                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]]}><NotificationsIcon/></Avatar>;
                             break;
                     }
                     return (<ListItem key={order.id} alignItems="flex-start" className={classes.listItem}>
@@ -139,7 +140,7 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                 >
                                     {/*TODO later user's image from his profile */}
                                     <ListItemAvatar>
-                                        <Avatar className={[classes.avatar, classes["status_"+order.status]]}>{avatarIcon}</Avatar>
+                                        {avatar}
                                     </ListItemAvatar>
                                     <ListItemText
                                         primary={order.createdAt} //TODO user's name
