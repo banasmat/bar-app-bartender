@@ -64,16 +64,28 @@ const useStyles = makeStyles(theme => ({
         color: 'white',
     },
     status_2: {
-        backgroundColor: 'red'
+        backgroundColor: 'red',
+        '&:hover': {
+            backgroundColor: 'red'
+        }
     },
     status_3: {
-        backgroundColor: 'blue'
+        backgroundColor: 'blue',
+        '&:hover': {
+            backgroundColor: 'blue'
+        }
     },
     status_4: {
-        backgroundColor: 'green'
+        backgroundColor: 'green',
+        '&:hover': {
+            backgroundColor: 'green'
+        }
     },
     status_5: {
-        backgroundColor: '#DAA520'
+        backgroundColor: '#DAA520',
+        '&:hover': {
+            backgroundColor: '#DAA520'
+        }
     }
 }));
 
@@ -84,18 +96,27 @@ const mapStateToProps = state => {
 const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
 
     const classes = useStyles();
+    let updateOrdersTimeout;
+
+    function updateOrders(reset=false){
+        if(reset){
+            clearTimeout(updateOrdersTimeout);
+            getOrderData(PLACE_ID);
+        }
+        updateOrdersTimeout = setTimeout(()=>{
+            getOrderData(PLACE_ID);
+            updateOrders()
+        }, 20000);
+    }
 
     useEffect(() => {
-        getOrderData(PLACE_ID);
-        setInterval(()=>{
-            getOrderData(PLACE_ID);
-        }, 20000);
-
+        updateOrders(true);
     }, []);
 
     const handleUpdateStatusClick = (e) => {
         const _data = e.currentTarget.dataset;
         updateOrderStatus(_data.orderid, _data.nextstatus);
+        updateOrders(true);
     };
 
     return (
@@ -108,27 +129,27 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                     switch(order.status){
                         case ORDER_STATUS_ACCEPTED:
                             statusButton = (
-                                <Button variant="extended" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_IN_PROGRESS} onClick={handleUpdateStatusClick} className={[classes.statusButton, classes.status_3]}>
+                                <Button variant="contained" color="inherit" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_IN_PROGRESS} onClick={handleUpdateStatusClick} className={classes.status_3}>
                                     <PlayArrowIcon/>W przygotowaniu
                                 </Button>
                             );
-                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]]}><PriorityHighIcon/></Avatar>;
+                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]].join(' ')}><PriorityHighIcon/></Avatar>;
                             break;
                         case ORDER_STATUS_IN_PROGRESS:
                             statusButton = (
-                                <Button variant="extended" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_READY} onClick={handleUpdateStatusClick} className={[classes.statusButton, classes.status_4]}>
+                                <Button variant="contained" color="inherit" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_READY} onClick={handleUpdateStatusClick} className={classes.status_4}>
                                     <NotificationsIcon/>Do odbioru
                                 </Button>
                             );
-                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]]}><PlayArrowIcon/></Avatar>;
+                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]].join(' ')}><PlayArrowIcon/></Avatar>;
                             break;
                         case ORDER_STATUS_READY:
                             statusButton = (
-                                <Button variant="extended" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_FINISHED} onClick={handleUpdateStatusClick} className={[classes.statusButton, classes.status_5]}>
+                                <Button variant="contained" color="inherit" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_FINISHED} onClick={handleUpdateStatusClick} className={classes.status_5}>
                                     <CheckCircleOutlineIcon/>Odebrane
                                 </Button>
                             );
-                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]]}><NotificationsIcon/></Avatar>;
+                            avatar = <Avatar className={[classes.avatar, classes["status_"+order.status]].join(' ')}><NotificationsIcon/></Avatar>;
                             break;
                     }
                     return (<ListItem key={order.id} alignItems="flex-start" className={classes.listItem}>
@@ -171,7 +192,7 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                             <TableBody>
                                                 {order.data.map(orderItem => {
                                                     return (
-                                                        <TableRow>
+                                                        <TableRow key={orderItem.menuItem.id}>
                                                             <TableCell align="left" colSpan={2}>{orderItem.menuItem.name}</TableCell>
                                                             <TableCell align="right">x{orderItem.count}</TableCell>
                                                         </TableRow>
@@ -186,7 +207,9 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                         variant="body2"
                                         color="textPrimary"
                                     >Zmień status na: </Typography>
+                                    <Box className={classes.statusButton}>
                                     {statusButton}
+                                    </Box>
                                 </ExpansionPanelActions>
                             </ExpansionPanel>
                         </ListItem>

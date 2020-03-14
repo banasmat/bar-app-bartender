@@ -7,7 +7,7 @@ import {
 import {GET_ORDERS, ORDER_STATUS} from "../constants/urls";
 import {PLACE_ID} from "../constants/config";
 
-export function getOrderData(searchValue) {
+export function getOrderData() {
     return function(dispatch) {
         return fetch(GET_ORDERS.replace('{placeId}', PLACE_ID))
             .then(response => response.json())

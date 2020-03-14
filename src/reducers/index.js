@@ -15,22 +15,22 @@ function rootReducer(state = initialState, action) {
             orders: state.orders = action.payload
         }
     }
-    if (action.type === ORDER_STATUS_UPDATED) {
-
-        const orderId = action.payload.orderId;
-
-        //TODO if new status 5, remove from the list
-
-        return update(state, {
-            orders: orders =>
-                update(orders || {}, {
-                    [orderId]: order =>
-                        update(order, {
-                            status: {$set: action.payload.status}
-                        })
-                })
-        });
-    }
+    // if (action.type === ORDER_STATUS_UPDATED) {
+    //
+    //     const orderId = action.payload.orderId;
+    //
+    //     //TODO if new status 5, remove from the list
+    //
+    //     return update(state, {
+    //         orders: orders =>
+    //             update(orders || {}, {
+    //                 [orderId]: order =>
+    //                     update(order, {
+    //                         status: {$set: action.payload.status}
+    //                     })
+    //             })
+    //     });
+    // }
     return state;
 }
 
