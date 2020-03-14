@@ -19,10 +19,13 @@ import Typography from '@material-ui/core/Typography';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 
 import {PLACE_ID} from "../constants/config";
 import {
@@ -31,7 +34,7 @@ import {
     ORDER_STATUS_IN_PROGRESS,
     ORDER_STATUS_READY
 } from "../constants/order-status";
-import Fab from "@material-ui/core/Fab";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -39,16 +42,37 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
     },
+    list: {
+        width: '100%',
+    },
+    listItem: {
+        width: '100%',
+    },
+    listItemContent: {
+        width: '100%',
+    },
     table: {
         borderCollapse: 'initial',
     },
+    avatar: {
+        color: 'white',
+    },
+    statusButtonWrapper: {
+        display: 'block',
+    },
+    statusButton: {
+        color: 'white',
+    },
     status_2: {
-        backgroundColor: 'yellow'
+        backgroundColor: 'red'
     },
     status_3: {
         backgroundColor: 'blue'
     },
     status_4: {
+        backgroundColor: 'green'
+    },
+    status_5: {
         backgroundColor: 'green'
     }
 }));
@@ -76,44 +100,47 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
 
     return (
         <Box className={classes.root}>
-            <List>
+            <List className={classes.list}>
                 {Object.values(orders).map((order) => {
                     let statusButton;
+                    let avatarIcon = <CircularProgress />;
                     switch(order.status){
                         case ORDER_STATUS_ACCEPTED:
                             statusButton = (
-                                <Fab variant="extended" data-orderid={order.id} data-nextstatus={ORDER_STATUS_IN_PROGRESS} onClick={handleUpdateStatusClick}>
+                                <Button variant="extended" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_IN_PROGRESS} onClick={handleUpdateStatusClick} className={[classes.statusButton, classes.status_3]}>
                                     <PlayArrowIcon/>W przygotowaniu
-                                </Fab>
+                                </Button>
                             );
+                            avatarIcon = <PriorityHighIcon/>;
                             break;
                         case ORDER_STATUS_IN_PROGRESS:
                             statusButton = (
-                                <Fab variant="extended" data-orderid={order.id} data-nextstatus={ORDER_STATUS_READY} onClick={handleUpdateStatusClick}>
+                                <Button variant="extended" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_READY} onClick={handleUpdateStatusClick} className={[classes.statusButton, classes.status_4]}>
                                     <NotificationsIcon/>Do odbioru
-                                </Fab>
+                                </Button>
                             );
+                            avatarIcon = <PlayArrowIcon/>;
                             break;
                         case ORDER_STATUS_READY:
                             statusButton = (
-                                <Fab variant="extended" data-orderid={order.id} data-nextstatus={ORDER_STATUS_FINISHED} onClick={handleUpdateStatusClick}>
+                                <Button variant="extended" size="large" data-orderid={order.id} data-nextstatus={ORDER_STATUS_FINISHED} onClick={handleUpdateStatusClick} className={[classes.statusButton, classes.status_5]}>
                                     <CheckCircleOutlineIcon/>Odebrane
-                                </Fab>
+                                </Button>
                             );
+                            avatarIcon = <NotificationsIcon/>;
                             break;
                     }
-                    return (<ListItem key={order.id} alignItems="flex-start">
-                            <ExpansionPanel>
+                    return (<ListItem key={order.id} alignItems="flex-start" className={classes.listItem}>
+                            <ExpansionPanel className={classes.listItemContent}>
                                 <ExpansionPanelSummary
-                                    className={classes["status_"+order.status]}
                                     expandIcon={<ExpandMoreIcon />}
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                 >
                                     {/*TODO later user's image from his profile */}
-                                    {/*<ListItemAvatar>*/}
-                                    {/*    <Avatar alt={menuItem.name} />*/}
-                                    {/*</ListItemAvatar>*/}
+                                    <ListItemAvatar>
+                                        <Avatar className={[classes.avatar, classes["status_"+order.status]]}>{avatarIcon}</Avatar>
+                                    </ListItemAvatar>
                                     <ListItemText
                                         primary={order.createdAt} //TODO user's name
                                         secondary={
@@ -133,14 +160,12 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                                 >
                                                 </Typography>
                                                 {/*TODO price */}
-
                                             </React.Fragment>
                                         }
                                     />
-                                {statusButton}
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
-                                    <TableContainer component={Paper}>
+                                    <TableContainer>
                                         <Table className={classes.table} aria-label="simple table">
                                             <TableBody>
                                                 {order.data.map(orderItem => {
@@ -154,6 +179,14 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
                                         </Table>
                                     </TableContainer>
                                 </ExpansionPanelDetails>
+                                <ExpansionPanelActions>
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        color="textPrimary"
+                                    >Zmień status na: </Typography>
+                                    {statusButton}
+                                </ExpansionPanelActions>
                             </ExpansionPanel>
                         </ListItem>
                     )
