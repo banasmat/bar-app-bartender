@@ -17,12 +17,11 @@ function rootReducer(state = initialState, action) {
     if (action.type === ORDER_STATUS_UPDATED) {
 
         const orderId = action.payload.orderId;
-        console.log(orderId);
-        console.log(state.orders);
 
         let order = state.orders[orderId];
-        order.state = action.payload.state;
-//FIXME correct updating state
+        order.status = action.payload.status;
+
+
         return {
             ...state,
             orders: {
