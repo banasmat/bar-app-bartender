@@ -116,7 +116,7 @@ const OrderList = ({ orders, getOrderData, updateOrderStatus }) => {
     const handleUpdateStatusClick = (e) => {
         const _data = e.currentTarget.dataset;
         updateOrderStatus(_data.orderid, _data.nextstatus);
-        updateOrders(true);
+        // updateOrders(true);
     };
 
     return (
